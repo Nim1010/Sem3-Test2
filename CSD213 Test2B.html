@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html> <head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="This test demonstrates a simple web-based tool to filter and explore various cat breeds using data from The Cat API. The app allows users to display all cat names, filter by health issues, view weight in imperial or metric, and compare intelligence and child-friendliness levels. It is built using HTML, CSS, and JavaScript." />
+  <meta name="author" content="Nimesh Neupane" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" content="HTML, CSS, JavaScript, Test 2" />
+      <style>
+        table {
+          text-align:center;
+          margin-left: 10%;
+          margin-right: 50%;
+          font-family: 'Lucida Sans', 'Lucida Sans Regular',
+                       'Lucida Grande', 'Lucida Sans Unicode',
+                        Geneva, Verdana, sans-serif;
+        }
+        input, button {
+          padding: 12px 20px;           margin: 8px 0;
+          display: inline-block;        border: 1px solid #ccc;
+          border-radius: 4px;           box-sizing: border-box;
+          font-family: 'Lucida Sans', 'Lucida Sans Regular',
+                       'Lucida Grande', 'Lucida Sans Unicode',
+                        Geneva, Verdana, sans-serif;
+          align: center;
+         }
+      </style>
+   </head>
+   <body>
+      <div align="center">
+      <h1>Booking place for your dinner!</h1>  
+    
+
+      <label for="name">Name:</label>
+      <input type="text" id="name" size="22">
+       
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" size="22"><br>  
+      </div>
+      <br>
+      <div align="margin-left">
+      <h2>Select a time</h2> <!-- Changed name of all of those radios to name so that one can only be clicked at a time -->
+      <input type="radio" id="first" name="time" value="5" checked>
+      <label for="first">5:00</label><br>
+      <input type="radio" id="second" name="time" value="6">
+      <label for="second">6:00</label><br>
+      <input type="radio" id="third" name="time" value="7">
+      <label for="third">7:00</label><br>
+      <input type="radio" id="fourth" name="time" value="8">
+      <label for="fourth">8:00</label><br>
+      <br>
+      <h2>What would you like to have with us?</h2>
+      <input type="checkbox" id="starters" name="starters" value="starters">
+      <label for="starters">Starters</label><br>
+      <input type="checkbox" id="Main" name="Main" value="main">
+      <label for="Main">Main Course</label><br>
+      <input type="checkbox" id="dessert" name="dessert" value="dessert">
+      <label for="dessert">dessert</label><br>
+      <input type="checkbox" id="drinks" name="drinks" value="drinks">
+      <label for="drinks">Drinks</label><br>
+      </div>
+      <button onclick="submit()" id="submit">
+        Submit</button> </body>
+<script>
+  // Form elements by their IDs
+  let nameInput = document.getElementById("name");
+  let phoneInput = document.getElementById("phone");
+  let submitButton = document.getElementById("submit");
+
+  // Create a label to show messages (errors or confirmation)
+  let messageLabel = document.createElement("label");
+  messageLabel.id = "msg";
+  submitButton.insertAdjacentElement("afterend", messageLabel);
+
+  // Disable submit by default
+  submitButton.disabled = true;
+
+  // This function shows an error message and highlights the box
+  function showError(inputBox, message) {
+    inputBox.style.backgroundColor = "red";
+    inputBox.style.borderColor = "black";
+    messageLabel.innerText = "Error: " + message;
+    submitButton.disabled = true; // Disable the button
+  }
+
+  // This function clears the error and makes the box normal
+  function clearError(inputBox) {
+    inputBox.style.backgroundColor = "white";
+    inputBox.style.borderColor = "#ccc";
+    messageLabel.innerText = ""; // Clear the message
+  }
+
+  // When I leaves the name box, check if it's valid
+  nameInput.addEventListener("blur", function () {
+    let name = nameInput.value.trim(); // remove extra spaces
+
+    if (name === "") {
+      showError(nameInput, "Name is empty.");
+    } else if (!name.includes(" ")) {
+      showError(nameInput, "First and last name are required.");
+    } else {
+      clearError(nameInput);
+    }
+
+    checkIfFormIsReady();
+  });
+
+  // When user leaves the phone box, check if it's valid
+  phoneInput.addEventListener("blur", function () {
+    let phone = phoneInput.value.trim();
+
+    if (phone === "") {
+      showError(phoneInput, "Phone number is empty.");
+    } else if (phone.length !== 6) {
+      showError(phoneInput, "Phone number must have exactly 6 characters.");
+    } else if (!/^\d/.test(phone)) {
+      showError(phoneInput, "Phone number must start with numbers.");
+    } else {
+      clearError(phoneInput);
+    }
+
+    checkIfFormIsReady();
+  });
+
+  // Check if both name and phone are okay, then allow submit
+  function checkIfFormIsReady() {
+    let name = nameInput.value.trim();
+    let phone = phoneInput.value.trim();
+
+    let isNameValid = name.includes(" ");
+    let isPhoneValid = phone.length === 6 && /^\d/.test(phone);
+
+    if (isNameValid && isPhoneValid) {
+      submitButton.disabled = false;
+    } else {
+      submitButton.disabled = true;
+    }
+  }
+
+  // Submit reservation
+  function submit() {
+    let name = nameInput.value.trim();
+    let phone = phoneInput.value.trim();
+
+    // Find which time is selected (only one can be)
+    let selectedTime = "";
+    let allRadios = document.querySelectorAll("input[type='radio']");
+    for (let radio of allRadios) {
+      if (radio.checked) {
+        selectedTime = radio.nextElementSibling.innerText;
+      }
+    }
+
+    // Collect all selected extras like Starters, Dessert etc.
+    let selectedExtras = [];
+    let allCheckboxes = document.querySelectorAll("input[type='checkbox']");
+    for (let checkbox of allCheckboxes) {
+      if (checkbox.checked) {
+        selectedExtras.push(checkbox.nextElementSibling.innerText);
+      }
+    }
+
+    // Show confirmation message
+    messageLabel.innerText = `Reservation for: ${name} Phone: (${phone}) at ${selectedTime} Starters are: ${selectedExtras.join(" ")}`;
+  }
+
+  // Run the submit function when button is clicked
+  submitButton.onclick = submit;
+</script>
+ </html>
